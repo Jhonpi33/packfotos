@@ -6,15 +6,20 @@ const DATA_DIR = path.join(__dirname, '..', 'data');
 const DB_PATH = path.join(DATA_DIR, 'db.json');
 const LOCAL_PATH = path.join(DATA_DIR, 'local.json');
 
-let db = { galerias: [], reservas: [] };
+let db = { galerias: [], solicitudes: [] };
 let local = {};
 let chain = Promise.resolve();
 
 function load() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
-  try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch (e) { db = { galerias: [], reservas: [] }; }
+  try { db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch (e) { db = { galerias: [], solicitudes: [] }; }
   if (!Array.isArray(db.galerias)) db.galerias = [];
-  if (!Array.isArray(db.reservas)) db.reservas = [];
+  // Migración: antes las solicitudes se llamaban "reservas".
+  if (!Array.isArray(db.solicitudes)) {
+    db.solicitudes = Array.isArray(db.reservas) ? db.reservas : [];
+    delete db.reservas;
+  }
+  if (!Array.isArray(db.solicitudes)) db.solicitudes = [];
   try { local = JSON.parse(fs.readFileSync(LOCAL_PATH, 'utf8')); } catch (e) { local = {}; }
 }
 

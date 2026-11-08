@@ -38,7 +38,7 @@ function urlAutorizar(redirectUri) {
     prompt: 'consent',
     scope: SCOPES,
     redirect_uri: redirectUri,
-    state: 'packfotos'
+    state: 'guaiti'
   });
 }
 

@@ -3,41 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Bre-B Fotografía · Paquetes de fotos y videos</title>
-  <meta name="description" content="Paquetes de fotos y videos con galería privada para descargar. Reserva tu sesión y paga fácil con Nequi.">
-  <meta name="theme-color" content="#0c0c10">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230c0c10' stroke='%23e0b45f' stroke-width='6'/><text x='50' y='66' font-size='48' font-family='Georgia' fill='%23e0b45f' text-anchor='middle'>B</text></svg>">
+  <title>Guaití · Aventura Sin Límite</title>
+  <meta name="description" content="Fotografía de aventura en Guaití: Cueva de la Vaca y Cuatrimotos. Déjanos tus datos y recibe tus fotos en tu galería privada.">
+  <meta name="theme-color" content="#12100c">
+  <link rel="icon" href="/img/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/estilos.css">
 </head>
 <body>
 
 <header class="barra">
   <div class="contenedor">
-    <a class="logo" href="#inicio"><span class="logo-mark">📸</span><span id="marca">Bre-B Fotografía</span></a>
+    <a class="logo" href="#inicio"><img src="/img/logo.png" alt="Guaití"><span id="marca" class="marca-texto">Guaití</span></a>
     <nav>
+      <a href="#servicios">Servicios</a>
       <a href="#como-funciona">Cómo funciona</a>
-      <a href="#paquetes">Paquetes</a>
-      <a href="#reserva">Reservar</a>
-      <a href="#pago">Pago</a>
+      <a href="#fotos">Fotos</a>
+      <a href="#solicitar">Mis fotos</a>
     </nav>
     <form id="form-codigo" class="codigo">
-      <input id="input-codigo" placeholder="Tu código" autocomplete="off" maxlength="20">
+      <input id="input-codigo" placeholder="Tu código" autocomplete="off" maxlength="20" aria-label="Tu código de galería">
       <button type="submit">Abrir</button>
     </form>
   </div>
 </header>
 
-<section id="inicio" class="hero contenedor">
-  <p class="hero-eyebrow" id="eslogan">Recuerdos que se ven, se sienten y se descargan fácil</p>
-  <h1>Tus recuerdos, en fotos y videos, <em>listos para descargar</em></h1>
-  <p class="hero-sub">Reserva tu sesión, capturamos tus mejores momentos y te enviamos una galería privada por WhatsApp. La ves en tu celular y la descargas completa con un solo botón.</p>
-  <div class="hero-acciones">
-    <a class="btn" href="#reserva">📅 Reservar mi sesión</a>
-    <button class="btn btn-fantasma" id="btn-tengo-codigo">🎟 Tengo un código</button>
+<section id="inicio" class="hero">
+  <div class="hero-fondo" style="background-image:url('/img/cueva-1.jpg')"></div>
+  <div class="hero-velo"></div>
+  <div class="hero-contenido contenedor">
+    <img class="hero-logo" src="/img/logo.png" alt="Guaití Aventura Sin Límite">
+    <p class="hero-eyebrow" id="eslogan">Aventura Sin Límite</p>
+    <h1>Tu aventura en <em>Guaití</em>, en fotos y videos</h1>
+    <p class="hero-sub">Cueva de la Vaca y Cuatrimotos. Escanea, déjanos tus datos y recibe tu galería privada con las mejores fotos de tu recorrido.</p>
+    <div class="hero-acciones">
+      <a class="btn" href="#solicitar">📸 Solicitar mis fotos</a>
+      <button class="btn btn-fantasma" id="btn-tengo-codigo">🎟 Tengo un código</button>
+    </div>
   </div>
+</section>
+
+<section id="servicios" class="seccion contenedor">
+  <h2>Elige tu <em>aventura</em></h2>
+  <p class="subtitulo">Dos experiencias, un solo lugar lleno de naturaleza y adrenalina.</p>
+  <div id="lista-servicios" class="servicios"></div>
 </section>
 
 <section id="como-funciona" class="seccion contenedor">
@@ -46,113 +57,85 @@
   <div class="pasos">
     <div class="paso">
       <div class="paso-num">1</div>
-      <h3>Reserva tu sesión</h3>
-      <p>Llena el formulario con tu fecha, hora y el paquete que más te guste.</p>
+      <h3>Escanea el QR</h3>
+      <p>Escaneas el código que te damos en el lugar y entras a tu página de fotos.</p>
     </div>
     <div class="paso">
       <div class="paso-num">2</div>
-      <h3>Capturamos tus momentos</h3>
-      <p>Hacemos las fotos y videos con la mejor actitud y equipo profesional.</p>
+      <h3>Déjanos tus datos</h3>
+      <p>Llenas el formulario con tu nombre, celular y el servicio que tomaste.</p>
     </div>
     <div class="paso">
       <div class="paso-num">3</div>
-      <h3>Recibe tu galería</h3>
-      <p>Te llega un link privado: ve tus fotos, mira tus videos y descarga todo en un clic.</p>
+      <h3>Recibe tus fotos</h3>
+      <p>Te llega un link privado por WhatsApp: mira tus fotos y descárgalas todas de una.</p>
     </div>
   </div>
 </section>
 
-<section id="paquetes" class="seccion contenedor">
-  <h2>Nuestros <em>paquetes</em></h2>
-  <p class="subtitulo">Elige el que más se ajuste a tu evento. Pago fácil con Nequi.</p>
-  <div id="lista-paquetes" class="paquetes"></div>
+<section id="fotos" class="seccion contenedor">
+  <h2>Vive la <em>experiencia</em></h2>
+  <p class="subtitulo">Así se ve la aventura en la Cueva de la Vaca.</p>
+  <div class="tira-fotos">
+    <img src="/img/cueva-2.jpg" alt="Cueva de la Vaca">
+    <img src="/img/cueva-3.jpg" alt="Cueva de la Vaca">
+    <img src="/img/cueva-1.jpg" alt="Cueva de la Vaca">
+  </div>
 </section>
 
-<section id="reserva" class="seccion contenedor">
-  <h2>Reserva tu <em>sesión</em></h2>
-  <p class="subtitulo">Cuéntanos qué evento tienes, la fecha y la hora. Te confirmamos por WhatsApp.</p>
+<section id="solicitar" class="seccion contenedor">
+  <h2>Déjanos tus <em>datos</em></h2>
+  <p class="subtitulo">Cuéntanos qué hiciste, la fecha y la hora, y te enviamos tus fotos por WhatsApp.</p>
 
-  <form id="form-reserva" class="form-reserva tarjeta">
+  <form id="form-solicitud" class="form-reserva tarjeta">
     <div class="campo">
-      <label for="r-nombre">Tu nombre *</label>
-      <input id="r-nombre" required placeholder="Ej: María Pérez" autocomplete="name">
+      <label for="s-nombre">Tu nombre *</label>
+      <input id="s-nombre" required placeholder="Ej: Juan Pérez" autocomplete="name">
     </div>
     <div class="campo">
-      <label for="r-celular">Celular *</label>
-      <input id="r-celular" required inputmode="tel" placeholder="300 123 4567" autocomplete="tel">
+      <label for="s-celular">Celular *</label>
+      <input id="s-celular" required inputmode="tel" placeholder="300 123 4567" autocomplete="tel">
     </div>
-    <div class="campo">
-      <label for="r-tipo">Tipo de evento</label>
-      <select id="r-tipo">
-        <option value="">Elige uno…</option>
-        <option>Cumpleaños</option>
-        <option>Boda</option>
-        <option>Bautizo</option>
-        <option>Primera comunión</option>
-        <option>Quinceañera</option>
-        <option>Baby shower</option>
-        <option>Graduación</option>
-        <option>Fiesta</option>
-        <option>Otro</option>
-      </select>
-    </div>
-    <div class="campo">
-      <label for="r-paquete">Paquete</label>
-      <select id="r-paquete"></select>
-    </div>
-    <div class="campo">
-      <label for="r-fecha">Fecha del evento *</label>
-      <input id="r-fecha" type="date" required>
-    </div>
-    <div class="campo">
-      <label for="r-hora">Hora</label>
-      <input id="r-hora" type="time">
-    </div>
+
     <div class="campo completo">
-      <label for="r-lugar">Lugar</label>
-      <input id="r-lugar" placeholder="Ciudad, barrio o dirección">
+      <label>¿Qué aventura hiciste? *</label>
+      <div id="opciones-servicio" class="opciones-servicio"></div>
     </div>
-    <div class="campo completo">
-      <label for="r-notas">Notas (opcional)</label>
-      <textarea id="r-notas" placeholder="Cuéntanos qué quieres: cuántas personas, estilo, ideas…"></textarea>
+
+    <div class="campo">
+      <label for="s-fecha">Fecha del recorrido</label>
+      <input id="s-fecha" type="date">
     </div>
+    <div class="campo">
+      <label for="s-hora">Hora</label>
+      <input id="s-hora" type="time">
+    </div>
+    <div class="campo">
+      <label for="s-personas">¿Cuántas personas?</label>
+      <input id="s-personas" inputmode="numeric" placeholder="Ej: 2">
+    </div>
+    <div class="campo">
+      <label for="s-notas">¿Algo que debamos saber? (opcional)</label>
+      <input id="s-notas" placeholder="Ej: íbamos con camisetas rojas">
+    </div>
+
     <div class="form-acciones">
-      <button class="btn" type="submit">Enviar reserva 💬</button>
+      <button class="btn" type="submit">Enviar mis datos 💬</button>
     </div>
   </form>
 
-  <div id="reserva-ok" class="exito-box oculto">
-    <h3>🎉 ¡Reserva recibida!</h3>
-    <p>Te confirmaremos muy pronto por WhatsApp. Para agilizar, envíanos este mismo mensaje:</p>
-    <a id="link-wa-reserva" class="btn" target="_blank" rel="noopener">Enviar por WhatsApp</a>
-  </div>
-</section>
-
-<section id="pago" class="seccion contenedor">
-  <h2>Pago fácil con <em>Nequi</em></h2>
-  <p class="subtitulo">Así pagas tu paquete en segundos:</p>
-  <ol class="pasos-nequi">
-    <li>Abre Nequi en tu celular y toca "Enviar".</li>
-    <li>Digita el número <strong id="nequi-numero-lista">318 659 6536</strong> y el valor de tu paquete.</li>
-    <li>Envía el comprobante por WhatsApp y tu galería queda desbloqueada. ✅</li>
-  </ol>
-  <div class="nequi-tarjeta">
-    <div class="nequi-fila">
-      <span class="etiqueta">Número Nequi</span>
-      <strong id="nequi-numero">318 659 6536</strong>
-    </div>
-    <div class="nequi-fila">
-      <span class="etiqueta">Titular</span>
-      <strong id="nequi-titular">bre-b</strong>
-    </div>
-    <button id="btn-copiar-nequi" class="btn btn-fantasma">📋 Copiar número</button>
+  <div id="solicitud-ok" class="exito-box oculto">
+    <h3>🎉 ¡Listo, recibimos tus datos!</h3>
+    <p>Muy pronto te enviaremos el link con tus fotos por WhatsApp. Para agilizar, mándanos este mismo mensaje:</p>
+    <a id="link-wa-solicitud" class="btn" target="_blank" rel="noopener">Enviar por WhatsApp</a>
   </div>
 </section>
 
 <footer class="pie">
   <div class="contenedor">
-    <a class="logo" href="#inicio"><span class="logo-mark">📸</span><span data-marca>Bre-B Fotografía</span></a>
+    <img class="pie-logo" src="/img/logo.png" alt="Guaití">
     <p id="wa-pie">Contáctanos por WhatsApp · <span id="anio">2026</span></p>
+    <p class="pie-marca">Guaití · Aventura Sin Límite · Cueva de la Vaca &amp; Cuatrimotos</p>
   </div>
 </footer>
 

@@ -1,4 +1,4 @@
-// PackFotos — servidor principal
+// Guaití — servidor principal
 require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
@@ -19,8 +19,8 @@ fs.rmSync(TMP, { recursive: true, force: true });
 fs.mkdirSync(TMP, { recursive: true });
 
 let config = {
-  marca: 'Mi Fotografía', eslogan: '', nequiNumero: '', nequiTitular: '',
-  whatsapp: '', paquetes: [], bloquearDescargasPendiente: true
+  marca: 'Guaití', eslogan: 'Aventura Sin Límite',
+  whatsapp: '', servicios: []
 };
 try {
   config = { ...config, ...JSON.parse(fs.readFileSync(path.join(ROOT, 'config.json'), 'utf8')) };
@@ -48,7 +48,7 @@ const parseCookies = req => {
   }
   return out;
 };
-const tokenCorrecto = () => crypto.createHash('sha256').update('packfotos::' + ADMIN_PASSWORD).digest('hex');
+const tokenCorrecto = () => crypto.createHash('sha256').update('guaiti::' + ADMIN_PASSWORD).digest('hex');
 const autenticado = req => parseCookies(req).token === tokenCorrecto();
 const requiereAuth = (req, res, next) => autenticado(req) ? next() : res.status(401).json({ error: 'No autorizado' });
 
@@ -58,14 +58,17 @@ const alAzar = (len, chars) => Array.from({ length: len }, () => chars[Math.floo
 
 const publicConfig = () => ({
   marca: config.marca, eslogan: config.eslogan,
-  nequiNumero: config.nequiNumero, nequiTitular: config.nequiTitular,
-  whatsapp: config.whatsapp, paquetes: config.paquetes
+  whatsapp: config.whatsapp, servicios: config.servicios
 });
 
 const publicarGalerias = gals => gals.map(g => ({
-  id: g.id, code: g.code, cliente: g.cliente, evento: g.evento,
-  paquete: g.paquete, precio: g.precio, estado: g.estado, creadoEn: g.creadoEn,
+  id: g.id, code: g.code, cliente: g.cliente, servicio: g.servicio,
+  fecha: g.fecha, hora: g.hora, personas: g.personas, notas: g.notas,
+  creadoEn: g.creadoEn,
   totalArchivos: (g.archivos || []).length,
+  totalFotos: (g.archivos || []).filter(a => a.tipo === 'foto').length,
+  totalVideos: (g.archivos || []).filter(a => a.tipo === 'video').length,
+  bytes: (g.archivos || []).reduce((s, a) => s + (Number(a.size) || 0), 0),
   archivos: (g.archivos || []).map(a => ({ id: a.id, nombre: a.nombre, tipo: a.tipo, size: a.size, thumb: a.thumb }))
 }));
 
@@ -91,8 +94,6 @@ const cambiarDb = async fn => { await store.mutate(fn); programarSync(); };
 
 (async () => {
   try {
-    // En servidores con disco temporal (Render) los tokens se pierden al reiniciar,
-    // así que también se pueden definir con la variable GOOGLE_REFRESH_TOKEN.
     const tokens = store.getLocal().driveTokens ||
       (process.env.GOOGLE_REFRESH_TOKEN ? { refresh_token: process.env.GOOGLE_REFRESH_TOKEN } : null);
     await drive.init(tokens);
@@ -111,7 +112,6 @@ async function prepararDrive() {
   }
   drive.setRaiz(local.rootFolderId);
 
-  // Restaurar BD desde Drive si es más reciente (útil en servidores con disco temporal).
   try {
     const remota = await drive.buscarDb();
     if (remota) {
@@ -207,35 +207,38 @@ app.get('/api/estado', (req, res) => res.json({
 
 app.get('/api/config', (req, res) => res.json(publicConfig()));
 
-app.post('/api/reservar', async (req, res) => {
+// El cliente deja sus datos (nombre, servicio, fecha y hora del tour).
+app.post('/api/solicitud', async (req, res) => {
   const b = req.body || {};
-  if (!b.nombre?.trim() || !b.celular?.trim() || !b.fecha) {
-    return res.status(400).json({ error: 'Completa al menos tu nombre, celular y fecha' });
+  const nombre = (b.nombre || '').trim();
+  const celular = (b.celular || '').trim();
+  const servicio = (b.servicio || '').trim();
+  if (!nombre || !celular) {
+    return res.status(400).json({ error: 'Cuéntanos tu nombre y tu celular' });
   }
-  const reserva = {
-    id: 'r' + Date.now().toString(36),
-    nombre: b.nombre.trim(), celular: b.celular.trim(),
-    tipoEvento: b.tipoEvento || '', fecha: b.fecha, hora: b.hora || '',
-    lugar: b.lugar || '', paquete: b.paquete || '', notas: b.notas || '',
+  if (!servicio) {
+    return res.status(400).json({ error: 'Elige tu servicio: Cueva de la Vaca o Cuatrimotos' });
+  }
+  const solicitud = {
+    id: 's' + Date.now().toString(36),
+    nombre, celular, servicio,
+    fecha: (b.fecha || '').trim(), hora: (b.hora || '').trim(),
+    personas: (b.personas || '').trim(), notas: (b.notas || '').trim(),
     atendido: false, creadoEn: new Date().toISOString()
   };
-  await cambiarDb(db => db.reservas.push(reserva));
+  await cambiarDb(db => db.solicitudes.push(solicitud));
   res.json({ ok: true });
 });
 
 app.get('/api/galeria/:code', (req, res) => {
   const g = store.buscar(req.params.code);
   if (!g) return res.status(404).json({ error: 'Galería no encontrada' });
-  const bloquear = !!config.bloquearDescargasPendiente;
   res.json({
-    id: g.id, code: g.code, estado: g.estado,
-    cliente: g.cliente, evento: g.evento, paquete: g.paquete, precio: g.precio,
+    id: g.id, code: g.code, cliente: g.cliente,
+    servicio: g.servicio, fecha: g.fecha, hora: g.hora, personas: g.personas,
     totalArchivos: (g.archivos || []).length,
-    descargable: g.estado === 'pagado' || !bloquear,
     archivos: (g.archivos || []).map(a => ({ id: a.id, nombre: a.nombre, tipo: a.tipo, size: a.size, thumb: a.thumb })),
-    nequi: { numero: config.nequiNumero, titular: config.nequiTitular },
-    whatsapp: config.whatsapp,
-    bloquearPendiente: bloquear
+    whatsapp: config.whatsapp
   });
 });
 
@@ -257,11 +260,6 @@ app.get('/api/thumb/:code/:fileId', async (req, res) => {
 app.get('/api/archivo/:code/:fileId', async (req, res) => {
   const r = store.archivo(req.params.code, req.params.fileId);
   if (!r) return res.status(404).send('No encontrado');
-  const bloquear = !!config.bloquearDescargasPendiente;
-  // Las fotos siempre se pueden ver (es el gancho para pagar); videos y descargas se bloquean.
-  if (bloquear && r.gal.estado !== 'pagado' && r.archivo.tipo === 'video') {
-    return res.status(403).send('Pago pendiente');
-  }
   try {
     const d = await drive.stream(r.archivo.id, req.headers.range);
     res.status(d.status || 200);
@@ -282,9 +280,6 @@ app.get('/api/archivo/:code/:fileId', async (req, res) => {
 app.get('/api/zip/:code', async (req, res) => {
   const g = store.buscar(req.params.code);
   if (!g) return res.status(404).send('No encontrada');
-  if (config.bloquearDescargasPendiente && g.estado !== 'pagado') {
-    return res.status(403).send('Pago pendiente');
-  }
   if (!(g.archivos || []).length) return res.status(400).send('La galería está vacía');
 
   res.setHeader('content-type', 'application/zip');
@@ -319,7 +314,7 @@ app.get('/api/drive/url', requiereAuth, (req, res) => {
 
 app.get('/api/drive/callback', async (req, res) => {
   const { code, state, error } = req.query;
-  if (error || state !== 'packfotos' || !code) return res.redirect('/admin?drive=error');
+  if (error || state !== 'guaiti' || !code) return res.redirect('/admin?drive=error');
   try {
     const redirectUri = `${req.protocol}://${req.get('host')}/api/drive/callback`;
     const tokens = await drive.intercambiar(code, redirectUri);
@@ -352,7 +347,7 @@ app.get('/api/admin/estado', (req, res) => res.json({ autenticado: autenticado(r
 
 app.get('/api/admin/datos', requiereAuth, (req, res) => res.json({
   galerias: publicarGalerias(store.getGalerias()),
-  reservas: store.get().reservas,
+  solicitudes: store.get().solicitudes,
   config: publicConfig()
 }));
 
@@ -370,11 +365,11 @@ app.patch('/api/admin/galerias/:id', requiereAuth, async (req, res) => {
   await cambiarDb(db => {
     const g = db.galerias.find(x => x.id === req.params.id);
     if (!g) return;
-    if (['pendiente', 'pagado'].includes(b.estado)) g.estado = b.estado;
     if (b.cliente) g.cliente = { ...g.cliente, ...b.cliente };
-    if (b.evento) g.evento = { ...g.evento, ...b.evento };
-    if (b.paquete !== undefined) g.paquete = b.paquete;
-    if (b.precio !== undefined) g.precio = Number(b.precio) || 0;
+    if (b.servicio !== undefined) g.servicio = b.servicio;
+    if (b.fecha !== undefined) g.fecha = b.fecha;
+    if (b.hora !== undefined) g.hora = b.hora;
+    if (b.personas !== undefined) g.personas = b.personas;
   });
   res.json({ ok: true });
 });
@@ -429,15 +424,28 @@ app.delete('/api/admin/galerias/:id/archivo/:fileId', requiereAuth, async (req, 
   res.json({ ok: true });
 });
 
-app.patch('/api/admin/reservas/:id', requiereAuth, async (req, res) => {
+app.patch('/api/admin/solicitudes/:id', requiereAuth, async (req, res) => {
   await cambiarDb(db => {
-    const r = db.reservas.find(x => x.id === req.params.id);
+    const r = db.solicitudes.find(x => x.id === req.params.id);
     if (r) r.atendido = !!req.body?.atendido;
   });
   res.json({ ok: true });
 });
 
+app.delete('/api/admin/solicitudes/:id', requiereAuth, async (req, res) => {
+  await cambiarDb(db => { db.solicitudes = db.solicitudes.filter(x => x.id !== req.params.id); });
+  res.json({ ok: true });
+});
+
 /* ---------------- creación de galerías ---------------- */
+
+// Carpeta en Drive: "2026-11-07 10-30 · Cueva de la Vaca · Juan Pérez"
+function nombreCarpeta(g) {
+  const hora = (g.hora || '').replace(':', '-');
+  return [g.fecha, hora].filter(Boolean).join(' ') +
+    (g.servicio ? ' · ' + g.servicio : '') +
+    ' · ' + g.cliente.nombre;
+}
 
 async function crearGaleria(body) {
   const nombre = ((body.cliente || {}).nombre || '').trim();
@@ -453,24 +461,20 @@ async function crearGaleria(body) {
   const gal = {
     id, code,
     cliente: { nombre, celular: ((body.cliente || {}).celular || '').trim() },
-    evento: {
-      tipo: ((body.evento || {}).tipo || '').trim(),
-      fecha: ((body.evento || {}).fecha || '').trim(),
-      hora: ((body.evento || {}).hora || '').trim(),
-      lugar: ((body.evento || {}).lugar || '').trim()
-    },
-    paquete: body.paquete || '',
-    precio: Number(body.precio) || 0,
-    estado: body.estado === 'pagado' ? 'pagado' : 'pendiente',
+    servicio: (body.servicio || '').trim(),
+    fecha: (body.fecha || '').trim(),
+    hora: (body.hora || '').trim(),
+    personas: (body.personas || '').trim(),
+    notas: (body.notas || '').trim(),
     archivos: [],
     creadoEn: new Date().toISOString()
   };
 
-  gal.carpetaDrive = await drive.crearCarpeta(`${gal.code} · ${gal.cliente.nombre}`, local.rootFolderId);
+  gal.carpetaDrive = await drive.crearCarpeta(nombreCarpeta(gal), local.rootFolderId);
   gal.carpetaThumbs = await drive.crearCarpeta('miniaturas', gal.carpetaDrive);
 
   await cambiarDb(db2 => db2.galerias.push(gal));
-  return { id: gal.id, code: gal.code, cliente: gal.cliente, estado: gal.estado };
+  return { id: gal.id, code: gal.code, cliente: gal.cliente, carpeta: nombreCarpeta(gal) };
 }
 
 /* ---------------- páginas ---------------- */
@@ -495,7 +499,7 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
-  console.log(`📸 ${config.marca} corriendo en http://localhost:${PORT}`);
+  console.log(`🏔 ${config.marca} corriendo en http://localhost:${PORT}`);
   console.log(`   Panel de administración: http://localhost:${PORT}/admin`);
 });
 server.requestTimeout = 0;

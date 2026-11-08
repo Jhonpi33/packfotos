@@ -1,25 +1,17 @@
 {
-  "marca": "Bre-B Fotografía",
-  "eslogan": "Recuerdos que se ven, se sienten y se descargan fácil",
-  "nequiNumero": "3186596536",
-  "nequiTitular": "bre-b",
+  "marca": "Guaití",
+  "eslogan": "Aventura Sin Límite",
   "whatsapp": "573186596536",
-  "bloquearDescargasPendiente": true,
-  "paquetes": [
+  "servicios": [
     {
-      "nombre": "Pack Básico",
-      "precio": 40000,
-      "detalle": "20 fotos digitales en alta calidad, listas para descargar"
+      "nombre": "Cueva de la Vaca",
+      "icono": "🦇",
+      "descripcion": "Explora la caverna y llévate fotos increíbles de tu aventura bajo tierra."
     },
     {
-      "nombre": "Pack Premium",
-      "precio": 80000,
-      "detalle": "50 fotos + 10 videos editados en tu galería privada"
-    },
-    {
-      "nombre": "Pack Oro",
-      "precio": 120000,
-      "detalle": "Fotos ilimitadas + videos + entrega prioritaria en 24 h"
+      "nombre": "Cuatrimotos",
+      "icono": "🏍️",
+      "descripcion": "Recorre los senderos y captura la adrenalina de tu recorrido en cuatrimoto."
     }
   ]
 }

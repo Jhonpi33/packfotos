@@ -1,6 +1,6 @@
-// Panel de administración
+// Panel de administración — Guaití
 let autenticado = false;
-let datos = { galerias: [], reservas: [], config: {} };
+let datos = { galerias: [], solicitudes: [], config: {} };
 
 const $ = sel => document.querySelector(sel);
 const $$ = sel => [...document.querySelectorAll(sel)];
@@ -46,21 +46,20 @@ async function cargarDatos() {
   if (r.status === 401) { autenticado = false; mostrarVistas(); return; }
   datos = await r.json();
   $('#marca').textContent = datos.config.marca;
-  const nuevas = datos.reservas.filter(x => !x.atendido).length;
-  $('#contador-reservas').textContent = nuevas;
-  renderPaquetes();
+  const nuevas = datos.solicitudes.filter(x => !x.atendido).length;
+  $('#contador-solicitudes').textContent = nuevas;
+  renderServicios();
   renderGalerias();
-  renderReservas();
+  renderSolicitudes();
 }
 
-function renderPaquetes() {
-  const sel = $('#n-paquete');
-  sel.innerHTML = '<option value="">Sin paquete</option>';
-  datos.config.paquetes.forEach(p => {
+function renderServicios() {
+  const sel = $('#n-servicio');
+  sel.innerHTML = '<option value="">Elige uno…</option>';
+  datos.config.servicios.forEach(s => {
     const opt = document.createElement('option');
-    opt.value = p.nombre;
-    opt.textContent = `${p.nombre} · ${formatoPrecio(p.precio)}`;
-    opt.dataset.precio = p.precio;
+    opt.value = s.nombre;
+    opt.textContent = (s.icono ? s.icono + ' ' : '') + s.nombre;
     sel.appendChild(opt);
   });
 }
@@ -93,23 +92,19 @@ function tarjetaGaleria(g) {
     </div>`).join('');
 
   const meta = [
-    g.evento?.tipo, g.evento?.fecha && fechaBonita(g.evento.fecha), g.evento?.hora,
-    g.paquete, g.precio ? formatoPrecio(g.precio) : '', `${g.totalArchivos} archivos`
+    g.servicio, g.fecha && fechaBonita(g.fecha), g.hora,
+    g.personas ? g.personas + ' pers.' : '',
+    g.totalFotos ? g.totalFotos + ' fotos' : '',
+    g.totalVideos ? g.totalVideos + ' videos' : '',
+    g.totalArchivos === 0 ? 'sin archivos aún' : ''
   ].filter(Boolean).join(' · ');
 
   el.innerHTML = `
     <div class="galeria-titulo">
       <h3>${esc(g.cliente.nombre)}</h3>
       <button class="chip-codigo" data-accion="copiar-codigo" title="Copiar código">${g.code}</button>
-      <span class="chip ${g.estado === 'pagado' ? 'chip-ok' : 'chip-espera'}">${g.estado === 'pagado' ? '✅ Pagada' : '⏳ Pendiente'}</span>
     </div>
     ${meta ? `<div class="galeria-meta">${esc(meta)}</div>` : ''}
-    <label class="galeria-estado">Estado
-      <select class="estado-galeria">
-        <option value="pendiente" ${g.estado === 'pendiente' ? 'selected' : ''}>⏳ Pendiente de pago</option>
-        <option value="pagado" ${g.estado === 'pagado' ? 'selected' : ''}>✅ Pagado (descargas activas)</option>
-      </select>
-    </label>
     <div class="galeria-acciones">
       <button class="btn btn-chico" data-accion="copiar-link">🔗 Copiar link</button>
       <button class="btn btn-chico btn-fantasma" data-accion="wa">💬 Enviar a cliente</button>
@@ -123,29 +118,31 @@ function tarjetaGaleria(g) {
   return el;
 }
 
-function renderReservas() {
-  const cont = $('#lista-reservas');
+function renderSolicitudes() {
+  const cont = $('#lista-solicitudes');
   cont.innerHTML = '';
-  if (!datos.reservas.length) {
-    cont.innerHTML = '<p class="vacio">No hay reservas todavía. Las reservas que hagan los clientes en la página aparecen aquí.</p>';
+  if (!datos.solicitudes.length) {
+    cont.innerHTML = '<p class="vacio">Aún no hay solicitudes. Cuando un cliente llene el formulario de la página, aparece aquí con sus datos.</p>';
     return;
   }
-  [...datos.reservas].reverse().forEach(r => {
+  [...datos.solicitudes].reverse().forEach(s => {
     const el = document.createElement('article');
-    el.className = 'reserva tarjeta';
-    el.dataset.id = r.id;
-    const meta = [r.tipoEvento, r.fecha && fechaBonita(r.fecha), r.hora, r.lugar, r.paquete, r.celular]
+    el.className = 'solicitud tarjeta';
+    el.dataset.id = s.id;
+    const meta = [s.servicio, s.fecha && fechaBonita(s.fecha), s.hora, s.personas ? s.personas + ' pers.' : '', s.celular]
       .filter(Boolean).join(' · ');
     el.innerHTML = `
       <div class="reserva-titulo">
-        <h3>${esc(r.nombre)}</h3>
-        <span class="chip ${r.atendido ? 'chip-ok' : 'chip-espera'}">${r.atendido ? '✓ Atendida' : 'Nueva'}</span>
+        <h3>${esc(s.nombre)}</h3>
+        <span class="chip ${s.atendido ? 'chip-ok' : 'chip-espera'}">${s.atendido ? '✓ Atendida' : 'Nueva'}</span>
       </div>
       ${meta ? `<div class="galeria-meta">${esc(meta)}</div>` : ''}
-      ${r.notas ? `<p class="reserva-notas">📝 ${esc(r.notas)}</p>` : ''}
+      ${s.notas ? `<p class="reserva-notas">📝 ${esc(s.notas)}</p>` : ''}
       <div class="galeria-acciones">
-        <button class="btn btn-chico btn-fantasma" data-accion="reserva-wa">💬 Responder</button>
-        <button class="btn btn-chico" data-accion="reserva-atender">${r.atendido ? '↩ Marcar pendiente' : '✓ Marcar atendida'}</button>
+        <button class="btn btn-chico" data-accion="solicitud-crear">➕ Crear galería</button>
+        <button class="btn btn-chico btn-fantasma" data-accion="solicitud-wa">💬 Responder</button>
+        <button class="btn btn-chico btn-fantasma" data-accion="solicitud-atender">${s.atendido ? '↩ Pendiente' : '✓ Atendida'}</button>
+        <button class="btn btn-chico btn-peligro" data-accion="solicitud-borrar">🗑</button>
       </div>`;
     cont.appendChild(el);
   });
@@ -157,76 +154,98 @@ document.addEventListener('click', async e => {
   const t = e.target.closest('[data-accion]');
   if (!t) return;
   const accion = t.dataset.accion;
-  const card = t.closest('.galeria');
-  const id = card?.dataset.id;
 
-  if (accion === 'copiar-link' && id) return copiar(enlaceGaleria(id), 'Link copiado ✔');
-  if (accion === 'copiar-codigo' && id) {
+  if (accion === 'copiar-link') {
+    const id = t.closest('.galeria')?.dataset.id;
+    return copiar(enlaceGaleria(id), 'Link copiado ✔');
+  }
+  if (accion === 'copiar-codigo') {
+    const id = t.closest('.galeria')?.dataset.id;
     const g = datos.galerias.find(x => x.id === id);
     return copiar(g?.code || '', 'Código copiado ✔');
   }
-  if (accion === 'ver' && id) return window.open(enlaceGaleria(id), '_blank');
-  if (accion === 'wa' && id) {
+  if (accion === 'ver') {
+    const id = t.closest('.galeria')?.dataset.id;
+    return window.open(enlaceGaleria(id), '_blank');
+  }
+  if (accion === 'wa') {
+    const id = t.closest('.galeria')?.dataset.id;
     const g = datos.galerias.find(x => x.id === id);
     const msg = encodeURIComponent(
-      `Hola ${g.cliente.nombre}! 🎉 Tu galería ya está lista.\n\n` +
-      `Mírala aquí: ${enlaceGaleria(id)}\n\n` +
-      `💛 Paga por Nequi al ${formatearNumero(datos.config.nequiNumero)} (${datos.config.nequiTitular}) ` +
-      `y se desbloquean los videos y la descarga completa. 😉`
+      `Hola ${g.cliente.nombre}! 🎉 Tus fotos de Guaití ya están listas.\n\n` +
+      `Míralas aquí: ${enlaceGaleria(id)}\n\n` +
+      `Puedes verlas y descargarlas todas. ¡Disfrútalas! 🏔️`
     );
     window.open('https://wa.me/' + telWa(g.cliente.celular) + '?text=' + msg, '_blank');
   }
-  if (accion === 'borrar' && id) {
+  if (accion === 'borrar') {
+    const id = t.closest('.galeria')?.dataset.id;
     if (!confirm('¿Eliminar esta galería y TODOS sus archivos? Esta acción no se puede deshacer.')) return;
     await fetch('/api/admin/galerias/' + id, { method: 'DELETE' });
     toast('Galería eliminada');
     cargarDatos();
   }
-  if (accion === 'archivo-borrar' && id) {
+  if (accion === 'archivo-borrar') {
+    const id = t.closest('.galeria')?.dataset.id;
     const fid = t.dataset.archivo;
     if (!confirm('¿Eliminar este archivo?')) return;
     await fetch(`/api/admin/galerias/${id}/archivo/${fid}`, { method: 'DELETE' });
     toast('Archivo eliminado');
     cargarDatos();
   }
-  if (accion === 'reserva-wa') {
-    const r = datos.reservas.find(x => x.id === t.closest('.reserva')?.dataset.id);
-    if (!r) return;
-    const msg = encodeURIComponent(`Hola ${r.nombre}! 👋 Gracias por tu reserva.\n`);
-    window.open('https://wa.me/' + telWa(r.celular) + '?text=' + msg, '_blank');
+
+  // Solicitudes
+  if (accion === 'solicitud-crear') {
+    const s = datos.solicitudes.find(x => x.id === t.closest('.solicitud')?.dataset.id);
+    if (!s) return;
+    prefillNueva(s);
+    switchTab('galerias');
+    $('#form-nueva').classList.remove('oculto');
+    $('#form-nueva').scrollIntoView({ behavior: 'smooth' });
   }
-  if (accion === 'reserva-atender') {
-    const rid = t.closest('.reserva')?.dataset.id;
-    const r = datos.reservas.find(x => x.id === rid);
-    if (!r) return;
-    await fetch('/api/admin/reservas/' + rid, {
+  if (accion === 'solicitud-wa') {
+    const s = datos.solicitudes.find(x => x.id === t.closest('.solicitud')?.dataset.id);
+    if (!s) return;
+    const msg = encodeURIComponent(`Hola ${s.nombre}! 👋 Gracias por dejarnos tus datos.\n`);
+    window.open('https://wa.me/' + telWa(s.celular) + '?text=' + msg, '_blank');
+  }
+  if (accion === 'solicitud-atender') {
+    const s = datos.solicitudes.find(x => x.id === t.closest('.solicitud')?.dataset.id);
+    if (!s) return;
+    await fetch('/api/admin/solicitudes/' + s.id, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ atendido: !r.atendido })
+      body: JSON.stringify({ atendido: !s.atendido })
     });
+    cargarDatos();
+  }
+  if (accion === 'solicitud-borrar') {
+    const s = datos.solicitudes.find(x => x.id === t.closest('.solicitud')?.dataset.id);
+    if (!s) return;
+    if (!confirm('¿Eliminar esta solicitud?')) return;
+    await fetch('/api/admin/solicitudes/' + s.id, { method: 'DELETE' });
+    toast('Solicitud eliminada');
     cargarDatos();
   }
 });
 
-document.addEventListener('change', async e => {
+// Rellena el formulario de nueva galería con los datos de una solicitud
+function prefillNueva(s) {
+  const f = $('#form-nueva-galeria');
+  f.elements.nombre.value = s.nombre || '';
+  f.elements.celular.value = s.celular || '';
+  f.elements.servicio.value = s.servicio || '';
+  f.elements.fecha.value = s.fecha || '';
+  f.elements.hora.value = s.hora || '';
+  f.elements.personas.value = s.personas || '';
+  f.elements.notas.value = s.notas || '';
+}
+
+document.addEventListener('change', e => {
   const sel = e.target;
-
-  if (sel.matches('.estado-galeria')) {
-    const id = sel.closest('.galeria')?.dataset.id;
-    await fetch('/api/admin/galerias/' + id, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ estado: sel.value })
-    });
-    toast(sel.value === 'pagado'
-      ? 'Galería marcada como PAGADA ✅ El cliente ya puede descargar todo'
-      : 'Galería pendiente de pago ⏳ Descargas bloqueadas');
-    cargarDatos();
-  }
-
   if (sel.matches('input[type="file"]')) {
     const id = sel.closest('.galeria')?.dataset.id;
     if (sel.files && sel.files.length) {
-      await subirArchivos(id, sel.files);
-      sel.value = '';
+      subirArchivos(id, sel.files).then(() => { sel.value = ''; });
     }
   }
 });
@@ -304,18 +323,13 @@ $('#btn-nueva').addEventListener('click', () => {
 });
 $('#btn-cancelar-nueva').addEventListener('click', () => $('#form-nueva').classList.add('oculto'));
 
-$('#n-paquete').addEventListener('change', e => {
-  const opt = e.target.selectedOptions[0];
-  if (opt?.dataset.precio) $('#n-precio').value = opt.dataset.precio;
-});
-
 $('#form-nueva-galeria').addEventListener('submit', async e => {
   e.preventDefault();
   const f = new FormData(e.target);
   const body = {
     cliente: { nombre: f.get('nombre'), celular: f.get('celular') },
-    evento: { tipo: f.get('tipo'), fecha: f.get('fecha'), hora: f.get('hora'), lugar: f.get('lugar') },
-    paquete: f.get('paquete'), precio: f.get('precio'), estado: f.get('estado')
+    servicio: f.get('servicio'), fecha: f.get('fecha'), hora: f.get('hora'),
+    personas: f.get('personas'), notas: f.get('notas')
   };
   const r = await fetch('/api/admin/galerias', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -331,10 +345,11 @@ $('#form-nueva-galeria').addEventListener('submit', async e => {
 
 /* ---------- pestañas ---------- */
 
-$$('.panel-tabs button').forEach(b => b.addEventListener('click', () => {
-  $$('.panel-tabs button').forEach(x => x.classList.toggle('activo', x === b));
-  $('#lista-galerias').classList.toggle('oculto', b.dataset.tab !== 'galerias');
-  $('#lista-reservas').classList.toggle('oculto', b.dataset.tab !== 'reservas');
-}));
+function switchTab(tab) {
+  $$('.panel-tabs button').forEach(x => x.classList.toggle('activo', x.dataset.tab === tab));
+  $('#lista-galerias').classList.toggle('oculto', tab !== 'galerias');
+  $('#lista-solicitudes').classList.toggle('oculto', tab !== 'solicitudes');
+}
+$$('.panel-tabs button').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 
 init();

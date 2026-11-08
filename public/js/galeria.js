@@ -1,4 +1,4 @@
-// Página de galería del cliente
+// Página de galería del cliente — Guaití
 const codigo = decodeURIComponent((location.pathname.split('/').filter(Boolean).pop() || '').trim());
 let g = null;
 let indice = 0;
@@ -17,6 +17,7 @@ async function cargar() {
   } catch (e) {
     $('#no-encontrada').classList.remove('oculto');
     $('#galeria').classList.add('oculto');
+    $('#btn-zip').classList.add('oculto');
     cargarConfig().then(cfg => {
       $('#link-wa-noencontrada').href = 'https://wa.me/' + cfg.whatsapp +
         '?text=' + encodeURIComponent('Hola! No puedo abrir mi galería. 😕 Me llegó este link/código: ' + codigo);
@@ -26,7 +27,7 @@ async function cargar() {
 
 function render() {
   const cfgPromise = cargarConfig().then(cfg => {
-    document.title = `Galería de ${g.cliente.nombre} · ${cfg.marca}`;
+    document.title = `Fotos de ${g.cliente.nombre} · ${cfg.marca}`;
     $('#marca').textContent = cfg.marca;
     $('#marca-pie').textContent = cfg.marca;
   });
@@ -35,67 +36,31 @@ function render() {
 
   // Chips de información
   const chips = [];
-  if (g.evento?.tipo) chips.push('🎉 ' + g.evento.tipo);
-  if (g.evento?.fecha) chips.push('📅 ' + fechaBonita(g.evento.fecha));
-  if (g.evento?.hora) chips.push('🕐 ' + g.evento.hora);
-  if (g.evento?.lugar) chips.push('📍 ' + g.evento.lugar);
-  if (g.paquete) chips.push('📦 ' + g.paquete);
+  if (g.servicio) chips.push('🏔️ ' + g.servicio);
+  if (g.fecha) chips.push('📅 ' + fechaBonita(g.fecha));
+  if (g.hora) chips.push('🕐 ' + g.hora);
+  if (g.personas) chips.push('👥 ' + g.personas + ' personas');
   chips.push('🖼 ' + g.totalArchivos + (g.totalArchivos === 1 ? ' archivo' : ' archivos'));
   $('#galeria-meta').innerHTML = chips.map(c => `<span class="chip">${esc(c)}</span>`).join('');
-
-  // Estado
-  const chip = $('#chip-estado');
-  if (g.estado === 'pagado') {
-    chip.className = 'chip chip-ok';
-    chip.textContent = '✅ Pago confirmado';
-  } else {
-    chip.className = 'chip chip-espera';
-    chip.textContent = '⏳ Pendiente de pago';
-  }
-
-  // Banner de pago
-  if (g.estado !== 'pagado' && g.bloquearPendiente) {
-    $('#banner-pago').classList.remove('oculto');
-    $('#banner-monto').textContent = g.precio ? formatoPrecio(g.precio) : 'Tu paquete de fotos';
-    $('#banner-nequi').textContent = formatearNumero(g.nequi.numero);
-    $('#banner-titular').textContent = g.nequi.titular;
-    $('#btn-copiar-nequi').addEventListener('click', () => copiar(g.nequi.numero, 'Número Nequi copiado ✔'));
-    $('#btn-ya-pague').addEventListener('click', () => {
-      const msg = encodeURIComponent(`Hola! Ya pagué mi galería por Nequi ✅\nCódigo: ${g.code}\nNombre: ${g.cliente.nombre}`);
-      window.open('https://wa.me/' + g.whatsapp + '?text=' + msg, '_blank');
-    });
-    $('#btn-zip').classList.add('btn-fantasma');
-    $('#btn-zip').innerHTML = '🔒 Descargar todo (paga para desbloquear)';
-  } else {
-    $('#banner-pago').classList.add('oculto');
-  }
 
   // Grid
   const cont = $('#galeria');
   cont.innerHTML = '';
   if (!g.archivos.length) {
     $('#vacio').classList.remove('oculto');
+    $('#btn-zip').classList.add('oculto');
     return;
   }
   g.archivos.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'item';
     if (a.tipo === 'foto') {
-      const btn = document.createElement('button');
-      btn.className = 'item';
       btn.innerHTML = `<img loading="lazy" src="${urlThumb(a)}" alt="${esc(a.nombre)}">`;
-      btn.addEventListener('click', () => abrirVisor(i));
-      cont.appendChild(btn);
-    } else if (g.descargable) {
-      const btn = document.createElement('button');
-      btn.className = 'item';
-      btn.innerHTML = `<video preload="metadata" muted playsinline src="${urlArchivo(a)}"></video><span class="play">▶</span>`;
-      btn.addEventListener('click', () => abrirVisor(i));
-      cont.appendChild(btn);
     } else {
-      const div = document.createElement('div');
-      div.className = 'item bloqueado';
-      div.innerHTML = '<span class="candado">🔒</span><span class="play">▶</span>';
-      cont.appendChild(div);
+      btn.innerHTML = `<video preload="metadata" muted playsinline src="${urlArchivo(a)}"></video><span class="play">▶</span>`;
     }
+    btn.addEventListener('click', () => abrirVisor(i));
+    cont.appendChild(btn);
   });
 
   cfgPromise.catch(() => {});
@@ -166,14 +131,8 @@ $('#visor').addEventListener('touchend', e => {
 /* ---------- descargar todo ---------- */
 $('#btn-zip').addEventListener('click', () => {
   if (!g) return;
-  if (!g.descargable) {
-    toast('Esta galería está pendiente de pago 💛 Paga por Nequi para desbloquear la descarga', false);
-    $('#banner-pago').scrollIntoView({ behavior: 'smooth' });
-    return;
-  }
   if (!g.archivos.length) { toast('La galería está vacía', false); return; }
   $('#overlay-zip').classList.remove('oculto');
-  // El navegador recibe el ZIP como descarga directa.
   window.location.href = '/api/zip/' + encodeURIComponent(g.id);
   setTimeout(() => $('#overlay-zip').classList.add('oculto'), 9000);
 });
@@ -181,7 +140,7 @@ $('#btn-zip').addEventListener('click', () => {
 /* ---------- compartir ---------- */
 $('#btn-compartir').addEventListener('click', async () => {
   if (!g) return;
-  const datos = { title: `Galería de ${g.cliente.nombre}`, text: 'Tus fotos y videos están listos 📸', url: location.href };
+  const datos = { title: `Fotos de ${g.cliente.nombre}`, text: 'Tus fotos de Guaití están listas 📸', url: location.href };
   if (navigator.share) {
     try { await navigator.share(datos); return; } catch (e) { /* cancelado */ }
   }

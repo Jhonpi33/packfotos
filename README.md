@@ -1,14 +1,15 @@
-# 📸 PackFotos — Entrega de paquetes de fotos y videos
+# 🏔️ Guaití — Fotografía de aventura (Cueva de la Vaca y Cuatrimotos)
 
-Sistema completo para vender paquetes de fotos hechos con el celular:
+Sistema para entregar las fotos y videos de la aventura en Guaití:
 
-- **Página profesional** con tus paquetes, formulario de reserva y pago Nequi.
-- **Panel de administración** (`/admin`) desde el celular: creas la galería de cada cliente (nombre, evento, fecha, hora, paquete, precio) y subes fotos/videos **directo desde la galería del iPhone**.
-- **Galería privada por cliente**: link único que se genera solo. El cliente ve las fotos, reproduce los videos y descarga todo con un botón (ZIP).
-- **Pago con Nequi**: el cliente paga y te avisa por WhatsApp; tú cambias el estado a "Pagado" con un toque y se desbloquean videos + descarga completa.
+- **Página profesional** con la marca Guaití: portada de aventura, los 2 servicios (Cueva de la Vaca y Cuatrimotos) y un formulario donde el cliente deja sus datos (nombre, celular, servicio, fecha y hora).
+- **Panel de administración** (`/admin`) desde el celular o la Mac: creas la galería de cada cliente y subes fotos/videos **directo desde el iPhone o la cámara**. El sistema crea solo una carpeta en Drive con la **fecha, la hora, el servicio y el nombre del cliente**.
+- **Galería privada por cliente**: link y código únicos. El cliente ve las fotos, reproduce los videos y descarga todo con un botón (ZIP).
 - **Almacenamiento en Google Drive** (gratis 15 GB) y respaldo automático de la base de datos en el mismo Drive.
+- **Código QR** para que los clientes escaneen y lleguen directo a la página (`/img/qr.png`).
 
 ---
+
 
 ## 1. Probar en tu computador
 
@@ -92,36 +93,33 @@ Para que los clientes entren desde cualquier celular:
 
 ---
 
-## 4. Uso día a día (desde tu iPhone)
+## 4. Uso día a día (desde tu iPhone o tu Mac)
 
 1. Abre `TU-DOMINIO/admin` en Safari (guárdalo en tus favoritos o "Agregar a inicio").
-2. Toca **➕ Nueva galería**: llena el nombre del cliente, celular, tipo de evento, fecha, hora, paquete y precio.
-3. Se genera **solo** un link y un código.
-4. Toca **📤 Subir fotos/videos** → se abre la galería de tu iPhone → selecciona todo → listo. Se muestra el % de subida.
+2. Toca **➕ Nueva galería**: llena el nombre del cliente, celular, el servicio (Cueva de la Vaca o Cuatrimotos), la fecha y la hora.
+3. Se genera **solo** un link y un código, y se crea la carpeta en Drive con la fecha, la hora, el servicio y el nombre del cliente.
+4. Toca **📤 Subir fotos/videos** → se abre la galería de tu iPhone o los archivos de tu Mac → selecciona todo → listo. Se muestra el % de subida.
 5. Toca **💬 Enviar a cliente**: abre WhatsApp con el mensaje y el link listos. Solo envías. 😉
-6. El cliente ve sus fotos, mira los videos y paga por Nequi (**318 659 6536**).
-7. Cuando te confirme el pago, cambia el estado de la galería a **✅ Pagado** → se desbloquean videos y la descarga ZIP.
 
 ### Cómo lo ve el cliente
-- Entra al link → ve las fotos en grande (se pueden pasar con el dedo).
-- Ve el banner "Pendiente de pago" con tu número Nequi.
-- Toca **"Ya pagué, avisar"** → te llega un WhatsApp automático con su código.
-- Cuando la marcas como pagada, aparece **⬇ Descargar todo (ZIP)** y los videos se reproducen.
-
-### Reservas
-- En la página principal los clientes llenan el formulario de reserva.
-- Las reservas aparecen en tu panel en la pestaña **📅 Reservas**, con botón para responder por WhatsApp y marcarlas como atendidas.
+- Escanea el **código QR** (o entra al link) → ve la portada de Guaití.
+- Llena el formulario con su nombre, celular, el servicio y la fecha/hora → a ti te llega en **📥 Solicitudes**.
+- En las Solicitudes tocas **➕ Crear galería** (se llena solo con sus datos) → subes las fotos → envías el link por WhatsApp.
+- El cliente ve sus fotos en grande (se pasan con el dedo), reproduce los videos y descarga todo con **⬇ Descargar todo (ZIP)**.
 
 ---
+
 
 ## 5. Personalizar
 
 | Qué | Dónde |
 |---|---|
-| Marca, eslogan, número Nequi, WhatsApp | `config.json` |
-| Paquetes y precios | `config.json` (sección `paquetes`) |
+| Marca, eslogan, WhatsApp | `config.json` |
+| Servicios (nombre, icono, descripción) | `config.json` (sección `servicios`) |
 | Contraseña del panel | `.env` → `ADMIN_PASSWORD` |
-| Bloquear descargas hasta pagar | `config.json` → `bloquearDescargasPendiente` (`true`/`false`) |
+| Fotos de la portada | `public/img/` (cueva-1.jpg, cueva-2.jpg, cueva-3.jpg) |
+| Logo | `public/img/logo.png` |
+| Código QR | `public/img/qr.png` |
 | Colores y estilo | `public/css/estilos.css` (variables al inicio) |
 
 ---
