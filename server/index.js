@@ -477,6 +477,8 @@ async function crearGaleria(body) {
 
 app.get('/galeria', (req, res) => res.redirect('/'));
 app.get('/galeria/:code', (req, res) => res.sendFile(path.join(PUBLIC, 'galeria.html')));
+app.get('/privacidad', (req, res) => res.sendFile(path.join(PUBLIC, 'privacidad.html')));
+app.get('/terminos', (req, res) => res.sendFile(path.join(PUBLIC, 'terminos.html')));
 
 /* ---------------- errores y arranque ---------------- */
 

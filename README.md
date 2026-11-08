@@ -67,6 +67,8 @@ Pasos (si hay que rehacerlo):
 
 ## 3. Subir a internet gratis (Render)
 
+> ✅ **Ya está publicado en** **https://packfotos.onrender.com** (plan gratis, conectado a Google Drive y a tu repositorio de GitHub `Jhonpi33/packfotos`). Cada vez que subas cambios a GitHub, Render actualiza la página solo.
+
 Para que los clientes entren desde cualquier celular:
 
 1. Crea una cuenta gratis en https://render.com (puedes entrar con tu cuenta de Google).
