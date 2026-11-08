@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Panel · Bre-B Fotografía</title>
+  <meta name="theme-color" content="#0c0c10">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230c0c10' stroke='%23e0b45f' stroke-width='6'/><text x='50' y='66' font-size='48' font-family='Georgia' fill='%23e0b45f' text-anchor='middle'>B</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+
+<!-- Login -->
+<div id="vista-login" class="admin-login oculto">
+  <form id="form-login" class="tarjeta">
+    <h1>🔐 Panel de administración</h1>
+    <p style="color:var(--gris);text-align:center;font-size:0.9rem">Escribe tu contraseña para entrar</p>
+    <input id="login-password" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</div>
+
+<!-- Panel -->
+<div id="vista-panel" class="admin-panel contenedor oculto">
+  <div class="admin-superior">
+    <h1>📸 <span id="marca">Bre-B Fotografía</span> · Panel</h1>
+    <button id="btn-salir" class="btn btn-fantasma btn-chico">Salir</button>
+  </div>
+
+  <div id="banner-drive" class="banner-pago oculto">
+    <h3>☁️ Conecta tu Google Drive</h3>
+    <p style="color:var(--gris)">Tus fotos y videos se guardarán en TU Google Drive personal (gratis 15 GB) y los verás en tu app de Drive.</p>
+    <button id="btn-conectar-drive" class="btn">Conectar Google Drive</button>
+  </div>
+
+  <div style="display:flex;gap:0.7rem;flex-wrap:wrap;margin-bottom:1rem">
+    <button id="btn-nueva" class="btn btn-chico">➕ Nueva galería</button>
+  </div>
+
+  <div class="panel-tabs">
+    <button data-tab="galerias" class="activo">🖼 Galerías</button>
+    <button data-tab="reservas">📅 Reservas <span id="contador-reservas" class="chip chip-espera" style="margin-left:0.3rem">0</span></button>
+  </div>
+
+  <!-- Formulario nueva galería -->
+  <section id="form-nueva" class="tarjeta oculto" style="padding:1.6rem;margin-bottom:1.4rem">
+    <h3 style="margin-bottom:1rem">➕ Nueva galería</h3>
+    <form id="form-nueva-galeria" class="rejilla-form">
+      <div class="campo">
+        <label>Nombre del cliente *</label>
+        <input name="nombre" required placeholder="Ej: María Pérez">
+      </div>
+      <div class="campo">
+        <label>Celular del cliente</label>
+        <input name="celular" inputmode="tel" placeholder="300 123 4567">
+      </div>
+      <div class="campo">
+        <label>Tipo de evento</label>
+        <select name="tipo">
+          <option value="">Elige uno…</option>
+          <option>Cumpleaños</option>
+          <option>Boda</option>
+          <option>Bautizo</option>
+          <option>Primera comunión</option>
+          <option>Quinceañera</option>
+          <option>Baby shower</option>
+          <option>Graduación</option>
+          <option>Fiesta</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Paquete</label>
+        <select id="n-paquete" name="paquete"></select>
+      </div>
+      <div class="campo">
+        <label>Fecha del evento</label>
+        <input name="fecha" type="date">
+      </div>
+      <div class="campo">
+        <label>Hora</label>
+        <input name="hora" type="time">
+      </div>
+      <div class="campo">
+        <label>Lugar</label>
+        <input name="lugar" placeholder="Ciudad, lugar del evento">
+      </div>
+      <div class="campo">
+        <label>Precio (COP)</label>
+        <input id="n-precio" name="precio" type="number" inputmode="numeric" placeholder="Ej: 80000">
+      </div>
+      <div class="campo completo">
+        <label>Estado inicial</label>
+        <select name="estado">
+          <option value="pendiente">⏳ Pendiente de pago</option>
+          <option value="pagado">✅ Pagado</option>
+        </select>
+      </div>
+      <div class="form-acciones">
+        <button class="btn" type="submit">Crear galería</button>
+        <button class="btn btn-fantasma" type="button" id="btn-cancelar-nueva">Cancelar</button>
+      </div>
+    </form>
+  </section>
+
+  <section id="lista-galerias"></section>
+  <section id="lista-reservas" class="oculto"></section>
+</div>
+
+<div id="toast"></div>
+
+<script src="/js/config.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

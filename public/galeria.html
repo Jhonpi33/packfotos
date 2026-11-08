@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tu galería · Bre-B Fotografía</title>
+  <meta name="theme-color" content="#0c0c10">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230c0c10' stroke='%23e0b45f' stroke-width='6'/><text x='50' y='66' font-size='48' font-family='Georgia' fill='%23e0b45f' text-anchor='middle'>B</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+
+<header class="barra">
+  <div class="contenedor galeria-top">
+    <div class="galeria-cab">
+      <a class="logo" href="/"><span class="logo-mark">📸</span><span id="marca">Bre-B Fotografía</span></a>
+      <div style="display:flex;gap:0.6rem;align-items:center">
+        <span id="chip-estado" class="chip chip-espera">…</span>
+        <button id="btn-compartir" class="btn btn-fantasma btn-chico">↗ Compartir</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="contenedor">
+  <section class="galeria-identidad">
+    <h1>Galería de <span id="nombre-cliente">…</span></h1>
+    <div id="galeria-meta" class="galeria-meta"></div>
+  </section>
+
+  <section id="banner-pago" class="banner-pago oculto">
+    <h3>💛 Tu galería está lista</h3>
+    <p id="banner-texto">Para descargar el paquete completo, realiza el pago por Nequi:</p>
+    <div class="monto" id="banner-monto"></div>
+    <div class="nequi-dato">Nequi: <strong id="banner-nequi"></strong> · <span id="banner-titular"></span></div>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;justify-content:center">
+      <button id="btn-copiar-nequi" class="btn btn-chico btn-fantasma">📋 Copiar número</button>
+      <button id="btn-ya-pague" class="btn btn-chico">✅ Ya pagué, avisar</button>
+    </div>
+    <p style="color:var(--gris);font-size:0.82rem">Cuando confirmemos tu pago, se desbloquean los videos y la descarga completa. Mientras tanto puedes ver todas las fotos. 😉</p>
+  </section>
+
+  <div class="galeria-toolbar">
+    <button id="btn-zip" class="btn">⬇ Descargar todo (ZIP)</button>
+  </div>
+
+  <div id="galeria" class="grid-galeria"></div>
+
+  <div id="vacio" class="vacio oculto">Esta galería aún no tiene archivos. ¡Vuelve pronto! 😊</div>
+  <div id="no-encontrada" class="vacio oculto">
+    <h2 style="margin-bottom:0.8rem">Galería no encontrada 😕</h2>
+    <p>Revisa el link o el código que te enviaron. Si crees que es un error, escríbenos por WhatsApp.</p>
+    <div style="margin-top:1.2rem"><a id="link-wa-noencontrada" class="btn" target="_blank" rel="noopener">💬 Escribir por WhatsApp</a></div>
+  </div>
+</main>
+
+<footer class="pie">
+  <div class="contenedor">
+    <p>Hecho con ❤️ por <span id="marca-pie">Bre-B Fotografía</span></p>
+  </div>
+</footer>
+
+<!-- Visor -->
+<div id="visor" class="oculto">
+  <button class="visor-cerrar" id="visor-cerrar">✕</button>
+  <button class="visor-boton visor-prev" id="visor-prev">‹</button>
+  <div id="visor-medio"></div>
+  <button class="visor-boton visor-next" id="visor-next">›</button>
+  <div class="visor-pie">
+    <span id="visor-info"></span>
+    <a id="visor-descarga" href="#" download>⬇ Descargar</a>
+  </div>
+</div>
+
+<div id="overlay-zip" class="oculto">
+  <div class="rueda"></div>
+  <h3>Preparando tu paquete…</h3>
+  <p style="color:var(--gris)">Estamos empaquetando todas tus fotos y videos. La descarga comenzará sola cuando esté listo. No cierres esta página. 🙏</p>
+</div>
+
+<div id="toast"></div>
+
+<script src="/js/config.js"></script>
+<script src="/js/galeria.js"></script>
+</body>
+</html>
