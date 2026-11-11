@@ -95,6 +95,7 @@ h2 em { font-style: normal; color: var(--acento); }
   background: var(--acento); color: #17120a; border: none; border-radius: 999px;
   padding: 0.5rem 1rem; font-weight: 700; font-size: 0.85rem;
 }
+.menu-toggle { display: none; }
 
 /* ---------- héroe ---------- */
 .hero { position: relative; overflow: hidden; text-align: center; }
@@ -363,10 +364,32 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 /* ---------- responsive ---------- */
 @media (max-width: 860px) {
   .pasos, .paquetes { grid-template-columns: 1fr; }
-  .barra nav { display: none; }
+  .barra .contenedor {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "brand code toggle" "nav nav nav";
+    gap: 0.6rem; padding: 0.55rem 0;
+  }
+  .barra .logo { grid-area: brand; min-width: 0; gap: 0.35rem; font-size: 1rem; }
+  .barra .logo img { height: 34px; }
+  .codigo { grid-area: code; min-width: 0; }
+  .codigo input { flex: 1; width: auto; min-width: 0; padding: 0.45rem 0.65rem; font-size: 0.76rem; }
+  .codigo button { padding: 0.45rem 0.72rem; }
+  .menu-toggle {
+    grid-area: toggle; display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border: 1px solid var(--borde); border-radius: 12px;
+    color: var(--texto); background: var(--fondo2); font-size: 1.1rem;
+  }
+  .barra nav {
+    grid-area: nav; display: none; width: 100%; flex-direction: column; gap: 0.15rem;
+    margin: 0; padding: 0.2rem 0;
+  }
+  .barra nav.menu-abierto { display: flex; }
+  .barra nav a { padding: 0.55rem 0.3rem; border-top: 1px solid var(--borde); }
   .form-reserva, .rejilla-form { grid-template-columns: 1fr; }
   .grid-galeria { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
   .visor-boton { width: 38px; height: 38px; }
+  .galeria { padding: 1rem; }
+  .galeria-estado { flex-wrap: wrap; }
 }
 
 /* Páginas legales (privacidad / términos) */
@@ -388,6 +411,7 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 }
 .servicio:hover { transform: translateY(-4px); border-color: rgba(255, 157, 27, 0.55); }
 .servicio-foto { height: 220px; background-size: cover; background-position: center; position: relative; }
+.servicio-foto-cuatrimotos { background-position: center 25%; }
 .servicio-foto::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(32,28,21,0.9)); }
 .servicio-foto-icono {
   display: flex; align-items: center; justify-content: center;
@@ -403,6 +427,7 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 /* Tira de fotos */
 .tira-fotos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .tira-fotos img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; border: 1px solid var(--borde); }
+.tira-fotos img.foto-cuatrimoto-vertical { object-position: center 55%; }
 
 /* Opciones de servicio en el formulario */
 .opciones-servicio { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
@@ -431,6 +456,30 @@ input[type="date"], input[type="time"] { color-scheme: dark; }
 @media (max-width: 860px) {
   .servicios, .tira-fotos, .opciones-servicio { grid-template-columns: 1fr; }
   .servicio-foto { height: 190px; }
+}
+
+@media (max-width: 480px) {
+  .contenedor { width: min(100% - 28px, 1080px); }
+  .hero-contenido { padding-top: 3.5rem; padding-bottom: 3rem; }
+  .hero-logo { height: 82px; margin-bottom: 1rem; }
+  .hero-eyebrow { margin-bottom: 0.8rem; font-size: 0.72rem; }
+  .hero-sub { font-size: 1rem; }
+  .hero-acciones { width: 100%; gap: 0.65rem; }
+  .hero-acciones .btn { width: 100%; max-width: 330px; }
+  .seccion { padding-top: 2.8rem; padding-bottom: 2.8rem; }
+  .subtitulo { margin-bottom: 1.6rem; }
+  .servicio-cuerpo { padding: 1.15rem 1.2rem 1.3rem; }
+  .form-reserva { padding: 1.2rem; }
+}
+
+@media (max-width: 360px) {
+  .barra .contenedor { gap: 0.4rem; }
+  .barra .logo { gap: 0.25rem; font-size: 0.88rem; }
+  .barra .logo img { height: 30px; }
+  .codigo { gap: 0.25rem; }
+  .codigo input { padding: 0.42rem 0.45rem; font-size: 0.68rem; letter-spacing: 0.02em; }
+  .codigo button { padding: 0.4rem 0.55rem; font-size: 0.76rem; }
+  .menu-toggle { width: 34px; height: 34px; }
 }
 
 /* Ayuda QR en el panel */

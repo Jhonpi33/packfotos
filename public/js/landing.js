@@ -1,3 +1,21 @@
+const menuToggle = document.getElementById('menu-toggle');
+const menuNav = document.getElementById('nav-principal');
+if (menuToggle && menuNav) {
+  menuToggle.addEventListener('click', () => {
+    const abierto = menuNav.classList.toggle('menu-abierto');
+    menuToggle.setAttribute('aria-expanded', String(abierto));
+    menuToggle.setAttribute('aria-label', abierto ? 'Cerrar menú' : 'Abrir menú');
+    menuToggle.textContent = abierto ? '✕' : '☰';
+  });
+  menuNav.addEventListener('click', e => {
+    if (!e.target.closest('a')) return;
+    menuNav.classList.remove('menu-abierto');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.setAttribute('aria-label', 'Abrir menú');
+    menuToggle.textContent = '☰';
+  });
+}
+
 (async () => {
   const cfg = await cargarConfig();
 
@@ -16,7 +34,7 @@
 
   const fotosServicio = {
     'Cueva de la Vaca': '/img/cueva-2.jpg',
-    'Cuatrimotos': null
+    'Cuatrimotos': '/img/cuatrimotos-2.jpg'
   };
 
   cfg.servicios.forEach((s, i) => {
@@ -24,9 +42,10 @@
     const card = document.createElement('article');
     card.className = 'servicio';
     const foto = fotosServicio[s.nombre];
+    const fotoClase = s.nombre === 'Cuatrimotos' ? 'servicio-foto-cuatrimotos' : '';
     card.innerHTML = `
       ${foto
-        ? `<div class="servicio-foto" style="background-image:url('${foto}')"></div>`
+        ? `<div class="servicio-foto ${fotoClase}" style="background-image:url('${foto}')"></div>`
         : `<div class="servicio-foto servicio-foto-icono"><span>${esc(s.icono || '🏔️')}</span></div>`}
       <div class="servicio-cuerpo">
         <div class="servicio-icono">${esc(s.icono || '🏔️')}</div>
