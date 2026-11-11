@@ -5,6 +5,8 @@ Sistema para entregar las fotos y videos de la aventura en Guaití:
 - **Página profesional** con la marca Guaití: portada de aventura, los 2 servicios (Cueva de la Vaca y Cuatrimotos) y un formulario donde el cliente deja sus datos (nombre, celular, servicio, fecha y hora).
 - **Panel de administración** (`/admin`) desde el celular o la Mac: creas la galería de cada cliente y subes fotos/videos **directo desde el iPhone o la cámara**. El sistema crea solo una carpeta en Drive con la **fecha, la hora, el servicio y el nombre del cliente**.
 - **Galería privada por cliente**: link y código únicos. El cliente ve las fotos, reproduce los videos y descarga todo con un botón (ZIP).
+- **Confirmación de pago**: la galería muestra el valor y los datos de Nequi, permite enviar el comprobante y solo habilita las descargas cuando confirmas el pago en el panel.
+- **Vigencia de las fotos**: las galerías con archivos se eliminan automáticamente después de los días definidos en `config.json` (`diasVigencia`). El contador empieza al subir la primera foto.
 - **Almacenamiento en Google Drive** (gratis 15 GB) y respaldo automático de la base de datos en el mismo Drive.
 - **Código QR** para que los clientes escaneen y lleguen directo a la página (`/img/qr.png`).
 
@@ -88,6 +90,15 @@ Para que los clientes entren desde cualquier celular:
 7. **Importante:** vuelve a Google Cloud → tu OAuth client → agrega la URI de redirección de Render: `https://TU-APP.onrender.com/api/drive/callback` (la URL real de tu app).
 8. Entra a `https://TU-APP.onrender.com/admin` → **Conectar Google Drive** → autoriza. (El permiso es por app: toca conectarlo también en Render, además del de tu computador.)
 9. Si quieres tu propio dominio (ej: `brebfotografia.com`), Render te deja conectarlo. Un dominio cuesta como $12 USD al año en [Namecheap](https://namecheap.com) o [Cloudflare](https://cloudflare.com).
+
+> Render debe tener `ADMIN_PASSWORD`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y `GOOGLE_REFRESH_TOKEN` configurados como variables de entorno. El servidor restaura la base de datos de Drive antes de aceptar solicitudes para evitar que el disco temporal de Render sobrescriba la copia persistente.
+
+### Cobros y confirmación
+
+- Configura `nequiNumero`, `nequiTitular`, `diasVigencia` y los precios en `config.json`.
+- Para servicios con `precioPorPersona`, el panel calcula el total usando el número de personas. En servicios de precio variable, ingresa el total manualmente en la tarjeta de la galería.
+- El cliente envía una imagen del comprobante desde su galería (máximo 10 MB). En el panel puedes abrirlo y cambiar **Pago** a **Confirmado**. Esto habilita las fotos, videos y el ZIP.
+- La confirmación es manual; revisa el movimiento en Nequi antes de habilitar las fotos.
 
 > ⚠️ En el plan gratis, la página se "duerme" cuando nadie la visita y tarda ~50 segundos en despertar la primera vez. Es normal y gratis.
 

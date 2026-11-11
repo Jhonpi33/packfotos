@@ -33,6 +33,23 @@ function render() {
   });
 
   $('#nombre-cliente').textContent = g.cliente.nombre;
+  const panelPago = $('#panel-pago');
+  const bloqueada = !g.desbloqueada;
+  panelPago.classList.toggle('oculto', !bloqueada);
+  $('#galeria-toolbar').classList.toggle('oculto', bloqueada);
+  $('#galeria').classList.toggle('oculto', bloqueada);
+  $('#vacio').classList.toggle('oculto', bloqueada);
+  if (bloqueada) {
+    $('#pago-monto').textContent = Number(g.precio) > 0
+      ? formatoPrecio(g.precio)
+      : 'Confirma el valor con el fotógrafo';
+    $('#nequi-numero').textContent = g.nequi?.numero || 'Solicita el número por WhatsApp';
+    $('#nequi-titular').textContent = g.nequi?.titular ? `Titular: ${g.nequi.titular}` : '';
+    $('#pago-estado').textContent = g.comprobanteEnviado
+      ? '✅ Recibimos tu comprobante. El fotógrafo confirmará el pago para habilitar las fotos.'
+      : 'Cuando realices el pago, envía una foto del comprobante. El fotógrafo confirmará el pago y habilitará tus fotos.';
+    $('#form-comprobante').classList.toggle('oculto', g.comprobanteEnviado);
+  }
 
   // Chips de información
   const chips = [];
@@ -65,6 +82,31 @@ function render() {
 
   cfgPromise.catch(() => {});
 }
+
+$('#form-comprobante').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!g || g.desbloqueada) return;
+  const input = $('#archivo-comprobante');
+  const archivo = input.files?.[0];
+  if (!archivo) return;
+  if (!archivo.type.startsWith('image/')) { toast('Selecciona una imagen del comprobante', false); return; }
+  if (archivo.size > 10 * 1024 * 1024) { toast('La imagen debe pesar menos de 10 MB', false); return; }
+  const boton = e.currentTarget.querySelector('button[type="submit"]');
+  boton.disabled = true;
+  try {
+    const fd = new FormData();
+    fd.append('comprobante', archivo);
+    const r = await fetch('/api/comprobante/' + encodeURIComponent(codigo), { method: 'POST', body: fd });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'No se pudo enviar el comprobante');
+    toast('Comprobante enviado ✔');
+    await cargar();
+  } catch (err) {
+    toast(err.message, false);
+  } finally {
+    boton.disabled = false;
+  }
+});
 
 /* ---------- visor ---------- */
 function abrirVisor(i) {

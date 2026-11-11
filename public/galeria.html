@@ -30,7 +30,19 @@
     <div id="galeria-meta" class="galeria-meta"></div>
   </section>
 
-  <div class="galeria-toolbar">
+  <section id="panel-pago" class="banner-pago oculto">
+    <h3>🔒 Desbloquea tus fotos</h3>
+    <p id="pago-monto" class="monto"></p>
+    <p class="nequi-dato">Paga por Nequi al <strong id="nequi-numero"></strong><br><span id="nequi-titular"></span></p>
+    <p id="pago-estado">Cuando realices el pago, envía una foto del comprobante. El fotógrafo confirmará el pago y habilitará tus fotos.</p>
+    <form id="form-comprobante" class="campo">
+      <label for="archivo-comprobante">Foto del comprobante</label>
+      <input id="archivo-comprobante" name="comprobante" type="file" accept="image/*" required>
+      <button class="btn" type="submit">Enviar comprobante</button>
+    </form>
+  </section>
+
+  <div id="galeria-toolbar" class="galeria-toolbar">
     <button id="btn-zip" class="btn">⬇ Descargar todo (ZIP)</button>
   </div>
 

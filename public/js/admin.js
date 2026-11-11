@@ -105,6 +105,17 @@ function tarjetaGaleria(g) {
       <button class="chip-codigo" data-accion="copiar-codigo" title="Copiar código">${g.code}</button>
     </div>
     ${meta ? `<div class="galeria-meta">${esc(meta)}</div>` : ''}
+    <div class="galeria-estado">
+      <label>Pago:</label>
+      <select data-campo="estado">
+        <option value="pendiente" ${(g.estado || 'pendiente') === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+        <option value="pagado" ${g.estado === 'pagado' ? 'selected' : ''}>Confirmado</option>
+      </select>
+      <label>Valor COP:</label>
+      <input data-campo="precio" type="number" min="0" step="1000" value="${Number(g.precio) || 0}" style="width:120px">
+      ${g.comprobante ? `<a class="btn btn-chico btn-fantasma" href="/api/admin/comprobante/${encodeURIComponent(g.id)}" target="_blank" rel="noopener">Ver comprobante</a>` : '<span>Sin comprobante</span>'}
+      <button class="btn btn-chico" data-accion="guardar-pago">Guardar</button>
+    </div>
     <div class="galeria-acciones">
       <button class="btn btn-chico" data-accion="copiar-link">🔗 Copiar link</button>
       <button class="btn btn-chico btn-fantasma" data-accion="wa">💬 Enviar a cliente</button>
@@ -167,6 +178,21 @@ document.addEventListener('click', async e => {
   if (accion === 'ver') {
     const id = t.closest('.galeria')?.dataset.id;
     return window.open(enlaceGaleria(id), '_blank');
+  }
+  if (accion === 'guardar-pago') {
+    const card = t.closest('.galeria');
+    const id = card?.dataset.id;
+    const precio = card?.querySelector('[data-campo="precio"]')?.value;
+    const estado = card?.querySelector('[data-campo="estado"]')?.value;
+    const r = await fetch('/api/admin/galerias/' + id, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ precio, estado })
+    });
+    const j = await r.json();
+    if (!r.ok) { toast(j.error || 'No se pudo guardar el pago', false); return; }
+    toast(estado === 'pagado' ? 'Pago confirmado; fotos habilitadas ✔' : 'Pago actualizado ✔');
+    cargarDatos();
+    return;
   }
   if (accion === 'wa') {
     const id = t.closest('.galeria')?.dataset.id;
@@ -329,7 +355,7 @@ $('#form-nueva-galeria').addEventListener('submit', async e => {
   const body = {
     cliente: { nombre: f.get('nombre'), celular: f.get('celular') },
     servicio: f.get('servicio'), fecha: f.get('fecha'), hora: f.get('hora'),
-    personas: f.get('personas'), notas: f.get('notas')
+    personas: f.get('personas'), notas: f.get('notas'), precio: f.get('precio')
   };
   const r = await fetch('/api/admin/galerias', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },

@@ -2,16 +2,21 @@
   "marca": "Guaití",
   "eslogan": "Aventura Sin Límite",
   "whatsapp": "573186596536",
+  "nequiNumero": "3186596536",
+  "nequiTitular": "bre-b",
+  "diasVigencia": 3,
   "servicios": [
     {
       "nombre": "Cueva de la Vaca",
       "icono": "🦇",
-      "descripcion": "Explora la caverna y llévate fotos increíbles de tu aventura bajo tierra."
+      "descripcion": "Explora la caverna y llévate fotos increíbles de tu aventura bajo tierra.",
+      "precioPorPersona": 10000
     },
     {
       "nombre": "Cuatrimotos",
       "icono": "🏍️",
-      "descripcion": "Recorre los senderos y captura la adrenalina de tu recorrido en cuatrimoto."
+      "descripcion": "Recorre los senderos y captura la adrenalina de tu recorrido en cuatrimoto.",
+      "precioVariable": true
     }
   ]
 }
